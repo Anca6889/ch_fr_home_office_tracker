@@ -36,18 +36,43 @@ MONTHS_EN = [
 ]
 DAYS_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-# ── UI theme ──────────────────────────────────────────────────────────────────
+# ── UI themes ─────────────────────────────────────────────────────────────────
 
-T = {
-    "bg":         "#1A1B2E",
-    "bg_panel":   "#252640",
-    "bg_cell":    "#2E2F50",
-    "bg_cell_wk": "#1E1F35",
-    "bg_today":   "#3A3B6A",
-    "fg":         "#D0D3F0",
-    "fg_dim":     "#6C6F9C",
-    "ok":         "#5CBF8A",
-    "danger":     "#E85C6A",
-    "accent":     "#7EB8F0",
-    "separator":  "#3A3B5C",
+DARK_THEME = {
+    "bg":               "#1A1B2E",
+    "bg_panel":         "#252640",
+    "bg_cell":          "#2E2F50",
+    "bg_cell_wk":       "#1E1F35",
+    "bg_today":         "#3A3B6A",
+    "fg":               "#D0D3F0",
+    "fg_dim":           "#6C6F9C",
+    "ok":               "#5CBF8A",
+    "danger":           "#E85C6A",
+    "accent":           "#7EB8F0",
+    "separator":        "#3A3B5C",
+    "status_ok_bg":     "#1B4332",
+    "status_danger_bg": "#4A0A14",
+    "btn_export_bg":    "#2C4A7C",
+    "btn_export_fg":    "#7EB8F0",
 }
+
+LIGHT_THEME = {
+    "bg":               "#F5F6FA",
+    "bg_panel":         "#FFFFFF",
+    "bg_cell":          "#EEEFF8",
+    "bg_cell_wk":       "#E4E5EF",
+    "bg_today":         "#D6E4F7",
+    "fg":               "#1A1B2E",
+    "fg_dim":           "#6C6F9C",
+    "ok":               "#27AE60",
+    "danger":           "#D63649",
+    "accent":           "#2A6FBA",
+    "separator":        "#CCCEE0",
+    "status_ok_bg":     "#D5F5E3",
+    "status_danger_bg": "#FAD7DA",
+    "btn_export_bg":    "#2A6FBA",
+    "btn_export_fg":    "#FFFFFF",
+}
+
+# Mutable dict — updated in-place when the user toggles the theme.
+T = dict(DARK_THEME)

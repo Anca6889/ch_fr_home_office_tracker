@@ -70,14 +70,18 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
     CELL_H     = GRID_H / 6
     CELL_W     = MONTH_W / 7
 
-    BG_PAGE    = hcol("#F7F8FC")
-    BG_MNTH    = hcol("#FFFFFF")
-    BG_WEEKEND = hcol("#F0F0F4")
-    BG_EMPTY   = hcol("#FAFAFA")
-    FG_MAIN    = hcol("#1A1B2E")
-    FG_DIM     = hcol("#888899")
-    FG_WKEND   = hcol("#AAAABC")
-    COL_BORDER = hcol("#DDDDEE")
+    # ── PDF colour palette (light) ────────────────────────────────────────────
+    HDR_BG     = hcol("#EEF0FB")   # header / footer background
+    MNTH_HDR   = hcol("#DDE0F5")   # month name bar
+    ACCENT     = hcol("#2A5FA8")   # titles & accents
+    FG_MAIN    = hcol("#1A1B2E")   # primary dark text
+    FG_DIM     = hcol("#6C6F9C")   # secondary text
+    BG_MNTH    = hcol("#FFFFFF")   # calendar cell (weekday)
+    BG_WEEKEND = hcol("#F0F0F4")   # calendar cell (weekend)
+    BG_EMPTY   = hcol("#FAFAFA")   # empty (out-of-month) cell
+    BG_PAGE    = hcol("#F7F8FC")   # page background
+    FG_WKEND   = hcol("#AAAABC")   # weekend text
+    COL_BORDER = hcol("#DDDDEE")   # cell borders
 
     c = rl_canvas.Canvas(path, pagesize=A4)
 
@@ -87,35 +91,38 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
 
     # ── Header ────────────────────────────────────────────────────────────────
     hdr_y = H - MT - HDR_H
-    c.setFillColor(hcol("#1A1B2E"))
-    c.roundRect(ML, hdr_y, USABLE_W, HDR_H, 4, fill=1, stroke=0)
+    c.setFillColor(HDR_BG)
+    c.setStrokeColor(COL_BORDER)
+    c.setLineWidth(0.5)
+    c.roundRect(ML, hdr_y, USABLE_W, HDR_H, 4, fill=1, stroke=1)
 
-    # Row 1 — title (top)
+    # Title
     c.setFont("Helvetica-Bold", 16)
-    c.setFillColor(hcol("#7EB8F0"))
+    c.setFillColor(ACCENT)
     c.drawString(ML + 14, hdr_y + HDR_H - 20, "Home Office Tracking")
 
-    # Row 2 — subtitle (middle)
+    # Subtitle
     c.setFont("Helvetica", 8)
-    c.setFillColor(hcol("#6C6F9C"))
+    c.setFillColor(FG_DIM)
     c.drawString(ML + 14, hdr_y + HDR_H - 36,
                  "Franco-Swiss Agreement — April 11, 1983  |  Remote Work Tracking")
 
-    # Row 3 — username badge (bottom), clearly below subtitle
+    # Username badge
     badge_w = min(200, 6.5 * len(username) + 28)
-    c.setFillColor(hcol("#3A3B6A"))
+    c.setFillColor(MNTH_HDR)
     c.roundRect(ML + 14, hdr_y + 8, badge_w, 15, 3, fill=1, stroke=0)
     c.setFont("Helvetica-Bold", 7.5)
-    c.setFillColor(hcol("#D0D3F0"))
+    c.setFillColor(FG_MAIN)
     c.drawString(ML + 21, hdr_y + 12, f"  {username}")
 
     # Year (right)
     c.setFont("Helvetica-Bold", 22)
-    c.setFillColor(white)
+    c.setFillColor(FG_MAIN)
     c.drawRightString(ML + USABLE_W - 14, hdr_y + HDR_H - 26, str(year))
 
+    # Generated date
     c.setFont("Helvetica", 7)
-    c.setFillColor(hcol("#6C6F9C"))
+    c.setFillColor(FG_DIM)
     generated = datetime.date.today().strftime("%B %d, %Y")
     c.drawRightString(ML + USABLE_W - 14, hdr_y + 8, f"Generated {generated}")
 
@@ -137,12 +144,12 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
 
         # Month name header
         month_num = month_idx + 1
-        c.setFillColor(hcol("#252640"))
+        c.setFillColor(MNTH_HDR)
         c.roundRect(mx, my + MONTH_H - MNTH_HDR_H, MONTH_W, MNTH_HDR_H, 3, fill=1, stroke=0)
         c.rect(mx, my + MONTH_H - MNTH_HDR_H, MONTH_W, MNTH_HDR_H / 2, fill=1, stroke=0)
 
         c.setFont("Helvetica-Bold", 8)
-        c.setFillColor(hcol("#7EB8F0"))
+        c.setFillColor(ACCENT)
         c.drawCentredString(mx + MONTH_W / 2, my + MONTH_H - MNTH_HDR_H + 4,
                             MONTHS_EN[month_idx].upper())
 
@@ -202,26 +209,24 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
                     c.drawCentredString(cx + CELL_W / 2, cy + 1.5, abbrevs[cat])
 
     # ── Summary section ───────────────────────────────────────────────────────
-    # Three horizontal bands (bottom → top):
-    #   Band A (76pt): category counters
-    #   Band B (36pt): key metrics
-    #   Band C (40pt): title + status banner
     sum_y   = MB
-    sum_top = sum_y + SUM_H          # sum_y + 152
-    DIV_BC  = sum_top - 40           # top of Band B / bottom of Band C
-    DIV_AB  = sum_y + 76             # top of Band A / bottom of Band B
+    sum_top = sum_y + SUM_H
+    DIV_BC  = sum_top - 40
+    DIV_AB  = sum_y + 76
 
-    c.setFillColor(hcol("#1A1B2E"))
-    c.roundRect(ML, sum_y, USABLE_W, SUM_H, 4, fill=1, stroke=0)
+    c.setFillColor(HDR_BG)
+    c.setStrokeColor(COL_BORDER)
+    c.setLineWidth(0.5)
+    c.roundRect(ML, sum_y, USABLE_W, SUM_H, 4, fill=1, stroke=1)
 
-    # ── Band C: title + status banner ────────────────────────────────────────
+    # ── Band C: title + status banner ─────────────────────────────────────────
     c.setFont("Helvetica-Bold", 9)
-    c.setFillColor(hcol("#7EB8F0"))
+    c.setFillColor(ACCENT)
     c.drawString(ML + 12, sum_top - 16, f"YEARLY SUMMARY — {year}  |  {username}")
 
     is_ok     = result["status"] == "ok"
-    status_bg = hcol("#1B4332") if is_ok else hcol("#4A0A14")
-    status_fg = hcol("#5CBF8A") if is_ok else hcol("#E85C6A")
+    status_bg = hcol("#D5F5E3") if is_ok else hcol("#FAD7DA")
+    status_fg = hcol("#1B6B3A") if is_ok else hcol("#8B2030")
     reason    = result["status_reason"].replace("\n", "  ")
     if len(reason) > 68:
         reason = reason[:65] + "…"
@@ -233,7 +238,7 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
     c.drawCentredString(ML + USABLE_W - 133, sum_top - 24, reason)
 
     # Divider B/C
-    c.setStrokeColor(hcol("#3A3B5C"))
+    c.setStrokeColor(COL_BORDER)
     c.setLineWidth(0.5)
     c.line(ML + 12, DIV_BC, ML + USABLE_W - 12, DIV_BC)
 
@@ -247,19 +252,19 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
         ("2005 exchange",      f"{result['hfr_exchange_used']} / 45"),
     ]
 
-    band_b_mid = (DIV_AB + DIV_BC) / 2      # vertical centre of Band B
+    band_b_mid = (DIV_AB + DIV_BC) / 2
     mw = USABLE_W / len(metrics)
     for i, (mlabel, mval) in enumerate(metrics):
         mx = ML + i * mw + mw / 2
         c.setFont("Helvetica-Bold", 8)
-        c.setFillColor(white)
+        c.setFillColor(FG_MAIN)
         c.drawCentredString(mx, band_b_mid + 5, str(mval))
         c.setFont("Helvetica", 6)
-        c.setFillColor(hcol("#6C6F9C"))
+        c.setFillColor(FG_DIM)
         c.drawCentredString(mx, band_b_mid - 8, mlabel)
 
     # Divider A/B
-    c.setStrokeColor(hcol("#3A3B5C"))
+    c.setStrokeColor(COL_BORDER)
     c.setLineWidth(0.5)
     c.line(ML + 12, DIV_AB, ML + USABLE_W - 12, DIV_AB)
 
@@ -267,23 +272,23 @@ def export_pdf(store: DataStore, year: int, username: str, parent_window):
     col_w = USABLE_W / len(CATEGORIES)
     for i, (code, label, color) in enumerate(CATEGORIES):
         cx      = ML + i * col_w + col_w / 2
-        cy_base = sum_y + 8         # anchor near bottom of band
+        cy_base = sum_y + 8
 
         sq = 10
         c.setFillColor(hcol(color))
         c.roundRect(cx - sq / 2, cy_base + 50, sq, sq, 2, fill=1, stroke=0)
 
         c.setFont("Helvetica-Bold", 18)
-        c.setFillColor(white)
+        c.setFillColor(FG_MAIN)
         c.drawCentredString(cx, cy_base + 30, str(counts[code]))
 
         c.setFont("Helvetica", 7)
-        c.setFillColor(hcol("#6C6F9C"))
+        c.setFillColor(FG_DIM)
         c.drawCentredString(cx, cy_base + 19, "days")
 
         short_label = label.replace(" (Switzerland)", "").replace(" (remote work)", "")
         c.setFont("Helvetica", 6.5)
-        c.setFillColor(hcol("#D0D3F0"))
+        c.setFillColor(FG_DIM)
         c.drawCentredString(cx, cy_base + 8, short_label)
 
     c.save()

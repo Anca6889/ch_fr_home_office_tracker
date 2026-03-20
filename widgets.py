@@ -100,10 +100,8 @@ class CalendarWidget(tk.Frame):
             cal.append([0] * 7)
 
         for row_i, week in enumerate(cal):
-            # uniform="calrow" ensures every row gets the exact same height
             self._grid_frame.rowconfigure(row_i, weight=1, uniform="calrow")
             for col_i, day_num in enumerate(week):
-                # uniform="calcol" ensures every column gets the exact same width
                 self._grid_frame.columnconfigure(col_i, weight=1, uniform="calcol")
                 cell = self._make_cell(day_num, col_i)
                 cell.grid(row=row_i, column=col_i, padx=2, pady=2, sticky="nsew")
@@ -125,7 +123,6 @@ class CalendarWidget(tk.Frame):
 
         cat = self._store.get(self._year, self._month, day_num)
 
-        # Short codes that all take exactly the same space → equal cell heights
         _CAT_SHORT = {
             CAT_BUREAU:  "Office",
             CAT_MAISON:  "Home",
@@ -148,7 +145,7 @@ class CalendarWidget(tk.Frame):
             cat_text = ""
 
         cell.configure(bg=bg)
-        cell.pack_propagate(False)  # content cannot stretch the cell beyond grid allocation
+        cell.pack_propagate(False)
 
         if is_today:
             cell.configure(highlightbackground=T["accent"],
@@ -309,8 +306,8 @@ class SidePanel(tk.Frame):
 
     def _add_alert(self, result):
         status = result["status"]
-        bg = "#1B4332" if status == "ok" else "#4A0A14"
-        fg = T["ok"]   if status == "ok" else T["danger"]
+        bg = T["status_ok_bg"] if status == "ok" else T["status_danger_bg"]
+        fg = T["ok"]           if status == "ok" else T["danger"]
         banner = tk.Label(
             self, text=result["status_reason"],
             bg=bg, fg=fg,
@@ -386,9 +383,9 @@ class SidePanel(tk.Frame):
         self._keep(frame)
 
         mfr_imp  = result["missions_france_imputed"]
-        mhfr_imp = result["missions_hors_france_imputed"]   # outside-FR within quota
-        hfr_exch = result["hfr_exchange_used"]              # residual → 2005 exchange
-        rem_exch = result["remaining_hors_france"]          # 45 - residual
+        mhfr_imp = result["missions_hors_france_imputed"]
+        hfr_exch = result["hfr_exchange_used"]
+        rem_exch = result["remaining_hors_france"]
 
         def metric(label, value, fg=T["fg_dim"]):
             row = tk.Frame(frame, bg=T["bg_panel"])
@@ -425,7 +422,7 @@ def _btn_kw() -> dict:
     )
 
 
-def _apply_dark_ttk(root):
+def _apply_ttk_theme(root):
     style = ttk.Style(root)
     style.theme_use("clam")
     style.configure(

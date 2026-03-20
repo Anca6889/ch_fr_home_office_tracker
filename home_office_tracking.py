@@ -11,9 +11,9 @@ Run with:
 import tkinter as tk
 from tkinter import ttk, simpledialog, messagebox
 
-from constants import T
+from constants import T, DARK_THEME, LIGHT_THEME
 from data import UserManager, DataStore, _user_data_file
-from widgets import CalendarWidget, SidePanel, _apply_dark_ttk
+from widgets import CalendarWidget, SidePanel, _apply_ttk_theme
 from pdf_export import export_pdf
 
 
@@ -26,13 +26,39 @@ class HomeOfficeApp(tk.Tk):
         self.title("Home Office Tracking — Franco-Swiss Agreement, April 11, 1983")
         self.geometry("1280x720")
         self.minsize(1060, 600)
+        self._is_dark = True
         self.configure(bg=T["bg"])
 
-        _apply_dark_ttk(self)
+        _apply_ttk_theme(self)
 
         self._users = UserManager()
         self._store = DataStore(self._users.current)
         self._build_ui()
+
+    # ── Theme toggle ──────────────────────────────────────────────────────────
+
+    def _toggle_theme(self):
+        # Save calendar position
+        year  = self._cal._year
+        month = self._cal._month
+
+        # Swap theme
+        self._is_dark = not self._is_dark
+        T.update(DARK_THEME if self._is_dark else LIGHT_THEME)
+
+        # Rebuild UI
+        self.configure(bg=T["bg"])
+        for w in self.winfo_children():
+            w.destroy()
+        _apply_ttk_theme(self)
+        self._build_ui()
+
+        # Restore calendar position
+        self._cal._year  = year
+        self._cal._month = month
+        self._cal._sync_combos()
+        self._cal.refresh()
+        self._refresh()
 
     # ── UI construction ───────────────────────────────────────────────────────
 
@@ -52,13 +78,22 @@ class HomeOfficeApp(tk.Tk):
 
         # Export PDF button (far right)
         tk.Button(top, text="⬇ Export PDF", command=self._export_pdf,
-                  bg="#2C4A7C", fg="#7EB8F0",
+                  bg=T["btn_export_bg"], fg=T["btn_export_fg"],
                   relief="flat", bd=0,
                   activebackground=T["accent"], activeforeground=T["bg"],
                   font=("Segoe UI", 9, "bold"), padx=10, pady=0,
                   cursor="hand2").pack(side="right", padx=12, pady=8)
 
-        # User section (right of top bar, left of Export button)
+        # Theme toggle button
+        icon = "☀" if self._is_dark else "🌙"
+        tk.Button(top, text=icon, command=self._toggle_theme,
+                  bg=T["bg_panel"], fg=T["accent"],
+                  relief="flat", bd=0,
+                  activebackground=T["accent"], activeforeground=T["bg"],
+                  font=("Segoe UI", 12), padx=6, pady=0,
+                  cursor="hand2").pack(side="right", padx=(0, 4), pady=8)
+
+        # User section
         user_frame = tk.Frame(top, bg=T["bg_panel"])
         user_frame.pack(side="right", padx=(0, 6), pady=6)
 
@@ -150,7 +185,6 @@ class HomeOfficeApp(tk.Tk):
                                    f'User "{name}" already exists.', parent=self)
             return
         self._user_cb.configure(values=self._users.users)
-        # Switch to the new user immediately
         self._user_var.set(name)
         self._on_user_select()
 
@@ -164,7 +198,6 @@ class HomeOfficeApp(tk.Tk):
                                    f'Delete user "{name}" and all their data?\n\nThis cannot be undone.',
                                    parent=self):
             return
-        # Optionally remove the data file
         data_file = _user_data_file(name)
         if data_file.exists():
             data_file.unlink()
