@@ -5,18 +5,20 @@ Shared constants — category codes, agreement thresholds, UI theme.
 
 # ── Category codes ────────────────────────────────────────────────────────────
 
-CAT_BUREAU  = "bureau"
-CAT_MAISON  = "maison"
-CAT_EN_FR   = "en_france"
-CAT_HORS_FR = "hors_france"
-CAT_CONGE   = "conge"
+CAT_BUREAU    = "bureau"
+CAT_MAISON    = "maison"
+CAT_EN_FR     = "en_france"
+CAT_HORS_FR   = "hors_france"
+CAT_NON_RETOUR = "non_retour"
+CAT_CONGE     = "conge"
 
 CATEGORIES = [
-    (CAT_BUREAU,  "Office (Switzerland)",   "#4A90D9"),
-    (CAT_MAISON,  "Home (remote work)",     "#27AE60"),
-    (CAT_EN_FR,   "Mission in France",      "#E74C3C"),
-    (CAT_HORS_FR, "Mission outside France", "#9B59B6"),
-    (CAT_CONGE,   "Vacation / Sick leave",  "#7F8C8D"),
+    (CAT_BUREAU,     "Office (Switzerland)",   "#4A90D9"),
+    (CAT_MAISON,     "Home (remote work)",     "#27AE60"),
+    (CAT_EN_FR,      "Mission in France",      "#E74C3C"),
+    (CAT_HORS_FR,    "Mission outside France", "#9B59B6"),
+    (CAT_NON_RETOUR, "Non-return day",         "#E67E22"),
+    (CAT_CONGE,      "Vacation / Sick leave",  "#7F8C8D"),
 ]
 
 CAT_LABEL = {k: lbl for k, lbl, _   in CATEGORIES}

@@ -10,7 +10,7 @@ from tkinter import ttk
 
 from constants import (
     T, CATEGORIES, MONTHS_EN, DAYS_EN,
-    CAT_BUREAU, CAT_MAISON, CAT_EN_FR, CAT_HORS_FR, CAT_CONGE,
+    CAT_BUREAU, CAT_MAISON, CAT_EN_FR, CAT_HORS_FR, CAT_NON_RETOUR, CAT_CONGE,
     CAT_COLOR, MAX_HORS_FR_EXCHANGE,
 )
 from data import DataStore
@@ -124,11 +124,12 @@ class CalendarWidget(tk.Frame):
         cat = self._store.get(self._year, self._month, day_num)
 
         _CAT_SHORT = {
-            CAT_BUREAU:  "Office",
-            CAT_MAISON:  "Home",
-            CAT_EN_FR:   "FR",
-            CAT_HORS_FR: "Ext",
-            CAT_CONGE:   "Vac",
+            CAT_BUREAU:     "Office",
+            CAT_MAISON:     "Home",
+            CAT_EN_FR:      "FR",
+            CAT_HORS_FR:    "Ext",
+            CAT_NON_RETOUR: "NRR",
+            CAT_CONGE:      "Vac",
         }
 
         if cat:
@@ -398,12 +399,14 @@ class SidePanel(tk.Frame):
         tk.Label(frame, text="Imputation details", bg=T["bg_panel"], fg=T["fg_dim"],
                  font=("Segoe UI", 8, "bold")).pack(anchor="w", pady=(0, 2))
 
+        mhfr     = result["missions_hors_france"]
+        nr       = result["non_retour_days"]
         metric("FR missions imputed (max 10, within 40%):",
                f"{mfr_imp} / 10 days", fg=T["fg"])
-        metric("Outside-FR imputed within 40% quota:",
+        metric("Outside-FR + non-return imputed (40% quota):",
                f"{mhfr_imp} days")
-        metric("Outside-FR residual → 2005 exchange:",
-               f"{hfr_exch} / 45 days",
+        metric("Outside-FR + non-return -> 2005 exchange:",
+               f"{hfr_exch} / 45 days  ({mhfr} MXX + {nr} NRR)",
                fg=T["danger"] if hfr_exch > MAX_HORS_FR_EXCHANGE else T["fg"])
         metric("2005 exchange remaining:", f"{rem_exch} days")
         metric("Recorded working days:",
