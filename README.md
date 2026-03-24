@@ -2,7 +2,7 @@
 
 ---
 
-🇫🇷 [Version française](#version-française) | 🇬🇧 [English version](#english-version)
+🇫🇷 [Version française](#version-française) | 🇬🇧 [English version](#english-version) | 🇩🇪 [Deutsche Version](#deutsche-version)
 
 ---
 
@@ -209,3 +209,106 @@ Data files (`home_office_*.json`) are created automatically in the same folder o
 - **Right click** → clear the day
 - **User** dropdown → switch between users (+ to add, ✕ to delete)
 - **⬇ Export PDF** button → generate the yearly report
+
+---
+
+## Deutsche Version
+
+Desktop-Anwendung zur Erfassung von Homeoffice-Tagen und zur Überprüfung der Konformität mit dem **Französisch-Schweizerischen Abkommen vom 11. April 1983**, konzipiert für Grenzgänger.
+
+### Wichtiger Hinweis
+
+> **⚠ Diese Anwendung ist ein persönliches Hilfsmittel. Sie stellt in keiner Weise eine rechtliche, steuerliche oder administrative Beratung dar.**
+
+#### Nutzung und Haftung
+
+Diese Anwendung ist für den **ausschließlich persönlichen Gebrauch** konzipiert. Sie funktioniert **vollständig offline**, ohne Internetverbindung, ohne Datenerfassung und ohne Übertragung von Informationen an externe Server. Alle Daten verbleiben auf dem Rechner des Nutzers.
+
+**Die in dieser Anwendung implementierten Berechnungsregeln (40%-Quote, 10-Tage-Regelung für Dienstreisen, 45-Tage-Regelung, Kategorienzurechnungslogik usw.) spiegeln die persönliche Auslegung des Autors** der anwendbaren Texte und Abkommen wider. Diese Auslegungen können unvollständig oder ungenau sein oder nicht der offiziellen Position der zuständigen Behörden entsprechen (französische und schweizerische Sozialversicherungsträger, Steuerverwaltungen usw.).
+
+Jeder Nutzer ist dafür verantwortlich:
+
+- Die **Berechnungsregeln bei den zuständigen Stellen zu überprüfen** (Sozialversicherungsträger, Arbeitgeber, Steuerberater usw.), bevor er Entscheidungen auf Grundlage der angezeigten Ergebnisse trifft.
+- **Sicherzustellen, dass das französisch-schweizerische Abkommen vom 11. April 1983 und seine Auslegungsvereinbarungen (2022, 2023) noch in Kraft sind** und seit der letzten Aktualisierung dieser Anwendung nicht geändert, ergänzt oder ersetzt wurden. Bilaterale Sozialversicherungs- und Steuerabkommen zwischen Staaten können sich jederzeit ändern.
+- **Die Ergebnisse dieser Anwendung nicht ausschließlich** als Nachweis gegenüber einem Arbeitgeber, einer Behörde oder einem Sozialversicherungs- oder Steuerträger zu verwenden.
+
+**Der Autor dieser Anwendung übernimmt keine Haftung** für Berechnungsfehler, fehlerhafte Auslegungen der Regeln, nicht in der Anwendung berücksichtigte Änderungen der Abkommen oder für jegliche Folgen (verwaltungsrechtlicher, finanzieller, steuerlicher oder sozialer Natur), die sich aus der Nutzung der erzeugten Ergebnisse ergeben. Jeder Nutzer trägt die alleinige Verantwortung für die Nutzung dieses Tools und die daraus abgeleiteten Entscheidungen.
+
+### Rechtsgrundlage
+
+| Regel | Quelle |
+|---|---|
+| 40%-Telearbeit-Quote | Französisch-schweizerisches Abkommen vom 11. April 1983 + Auslegungsvereinbarungen 2022/2023 |
+| 10-Tage-Obergrenze für anrechenbare Dienstreisen | Gleiches Abkommen |
+| 45-Tage-Obergrenze für Aufenthalte außerhalb Frankreichs | Art. 1d + Briefwechsel vom 21.–24. Februar 2005 |
+
+### Tageskategorien
+
+| Kategorie | Anrechnung auf die 40%-Quote |
+|---|---|
+| Büro (Schweiz) | Nein |
+| Homeoffice | Ja — vollständig |
+| Dienstreise in Frankreich | Ja — vorrangig angerechnet (max. 10 Tage kombiniert mit Ausland) |
+| Dienstreise außerhalb Frankreichs | Ja — innerhalb der verbleibenden Kapazität; Gesamtgrenze 45 Tage/Jahr |
+| Nicht-Rückkehrtag | Wird auf die 45-Tage-Obergrenze angerechnet |
+| Urlaub / Krankheit | Zählt nicht als Arbeitstag |
+
+### Übersicht
+
+Die Anwendung ermöglicht:
+
+- Erfassung und Visualisierung von Arbeitstagen nach Kategorie in einem Monatskalender
+- Echtzeit-Berechnung der Konformität mit der **40%-Quote**
+- Verfolgung der Nutzung des **45-Tage-Austauschs** (Abkommen 2005)
+- Erstellung eines **dreisprachigen PDF-Berichts** (FR / EN / DE) auf einer DIN-A4-Seite
+- Verwaltung mehrerer Nutzer mit separaten Datendateien
+
+### Offline-Betrieb
+
+Die Anwendung benötigt **zu keinem Zeitpunkt eine Internetverbindung**. Alle Daten werden lokal im Anwendungsverzeichnis gespeichert. Es werden keine Daten synchronisiert, geteilt oder übertragen.
+
+### Voraussetzungen
+
+- Python 3.9 oder neuer
+- `reportlab` (nur für den PDF-Export erforderlich)
+
+```bash
+pip install reportlab
+```
+
+### Installation und Start
+
+```bash
+# Repository klonen
+git clone https://github.com/Anca6889/ch_fr_home_office_tracker.git
+cd ch_fr_home_office_tracker
+
+# PDF-Abhängigkeit installieren (optional)
+pip install reportlab
+
+# Anwendung starten
+py home_office_tracking.py
+```
+
+Unter Windows startet ein Doppelklick auf **`Frontalier.vbs`** die Anwendung ohne Terminalfenster.
+
+### Projektstruktur
+
+```
+├── home_office_tracking.py   # Einstiegspunkt — HomeOfficeApp-Shell
+├── constants.py              # Kategoriecodes, Schwellenwerte, UI-Theme
+├── data.py                   # UserManager, DataStore (JSON-Persistenz)
+├── engine.py                 # Konformitätsberechnungs-Engine
+├── widgets.py                # CalendarWidget, SidePanel, ttk-Hilfsfunktionen
+├── pdf_export.py             # PDF-Erstellung via reportlab
+└── Frontalier.vbs            # Windows-Starter (ohne Terminalfenster)
+```
+
+Datendateien (`home_office_*.json`) werden beim ersten Start automatisch im gleichen Verzeichnis erstellt.
+
+### Bedienung
+
+- **Linksklick** auf einen Werktag → Kategorie zuweisen
+- **Rechtsklick** → Tag löschen
+- **User**-Dropdown → Nutzer wechseln (+ zum Hinzufügen, ✕ zum Löschen)
+- Schaltfläche **⬇ Export PDF** → Jahresbericht erstellen
